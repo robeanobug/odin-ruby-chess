@@ -56,10 +56,7 @@ board: !ruby/object:Board
       color: :black
       symbol: "♟"
       name: pawn
-    - !ruby/object:Pawn
-      color: :black
-      symbol: "♟"
-      name: pawn
+    - " "
     - !ruby/object:Pawn
       color: :black
       symbol: "♟"
@@ -84,7 +81,10 @@ board: !ruby/object:Board
     - " "
     - " "
     - " "
-    - " "
+    - !ruby/object:Pawn
+      color: :black
+      symbol: "♟"
+      name: pawn
     - " "
     - " "
     - " "
@@ -94,7 +94,10 @@ board: !ruby/object:Board
     - " "
     - " "
     - " "
-    - " "
+    - !ruby/object:Pawn
+      color: :white
+      symbol: "♙"
+      name: pawn
     - " "
   - - " "
     - " "
@@ -128,10 +131,7 @@ board: !ruby/object:Board
       symbol: "♙"
       name: pawn
     - " "
-    - !ruby/object:Pawn
-      color: :white
-      symbol: "♙"
-      name: pawn
+    - " "
     - !ruby/object:Pawn
       color: :white
       symbol: "♙"

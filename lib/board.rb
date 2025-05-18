@@ -202,14 +202,11 @@ class Board
   end
 
   def checkmate?(color)
-    puts "Checking checkmate for #{color}" # debugger
     return false unless in_check?(color)
 
     king_pos = find_king(color)
-    puts "King position: #{king_pos}" # debugger
     king = get_piece(king_pos)
     king_moves = king.valid_moves(king_pos, self)
-    puts "King valid moves: #{king_moves.inspect}" # debugger
 
     # enemy_color = color == :white ? :black : :white
     enemy_moves = []
@@ -223,17 +220,11 @@ class Board
       enemy_moves.concat(piece_moves)
       attackers << piece if piece_moves.include?(king_pos)
     end
-
-    puts "Attackers: #{attackers.map(&:name).inspect}" # debugger
-    puts "Enemy moves: #{enemy_moves.inspect}" # debugger
     
     safe_king_moves = king_moves.select do |move|
-      result = simulate_move_and_check(king_pos, move, color)
-      puts "Testing king move #{move}: safe? #{result}" # debugger
-      result
+      simulate_move_and_check(king_pos, move, color)
     end
 
-    puts "Safe king moves: #{safe_king_moves.inspect}" # debugger
     # Can the king move to safety?
     return false unless safe_king_moves.empty?
 
@@ -245,15 +236,12 @@ class Board
 
     attacker_pos = find_piece_position(attacker)
     attack_path = get_path_to_king(attacker_pos, king_pos, attacker)
-    puts "Single attacker at #{attacker_pos}, path: #{attack_path.inspect}" # debugger
 
     @grid.flatten.each do |ally|
       next if ally.nil? || ally == " " || ally.color != king.color
     
       from = find_piece_position(ally)
       ally_moves = ally.valid_moves(from, self)
-
-      puts "Checking ally #{ally.name} at #{from} with moves #{ally_moves.inspect}" # debugger
     
       # Can we capture the attacker?
       return false if ally_moves.include?(attacker_pos)
@@ -266,7 +254,6 @@ class Board
         return false if ally_moves.include?(block_square)
       end
     end
-    puts "No way out — it's checkmate!" # debugger
     true
   end
 end
