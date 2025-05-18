@@ -90,11 +90,19 @@ class Board
     piece = @grid[from_row][from_col]
     return false if piece.nil?
 
-    valid_moves = piece.valid_moves([from_row, from_col], self)
-    return false unless valid_moves.include?([to_row, to_col])
+    moves = piece.valid_moves([from_row, from_col], self)
+    return false unless moves.include?([to_row, to_col])
+
+    captured_piece = @grid[to_row][to_col]
 
     @grid[from_row][from_col] = " "
     @grid[to_row][to_col] = piece
+
+    if in_check?(piece.color)
+      @grid[from_row][from_col] = piece
+      @grid[to_row][to_col] = captured_piece
+      return false
+    end
     true
   end
 
@@ -133,7 +141,7 @@ class Board
   def in_check?(color)
     king_pos = find_king(color)
     enemy_color = color == :white ? :black : :white
-  
+
     # Go through all enemy pieces
     @grid.flatten.each do |piece|
       next unless piece.is_a?(Piece) && piece.color == enemy_color
@@ -152,26 +160,114 @@ class Board
     end
   end
 
-  # def checkmate?(color)
-  #   puts "Is #{color} in check? #{in_check?(color)}"
-  #   return false unless in_check?(color)
+  def get_path_to_king(from_pos, to_pos, attacker)
+    path = []
   
-  #   # For all pieces of the player
-  #   @grid.flatten.each do |piece|
-  #     next if piece == " " || piece.nil? || piece.color != color
+    return path if attacker.is_a?(Knight) || attacker.is_a?(Pawn)
+  
+    from_row, from_col = from_pos
+    to_row, to_col = to_pos
+  
+    row_step = (to_row <=> from_row)
+    col_step = (to_col <=> from_col)
+  
+    current_row = from_row + row_step
+    current_col = from_col + col_step
+  
+    while [current_row, current_col] != to_pos
+      path << [current_row, current_col]
+      current_row += row_step
+      current_col += col_step
+    end
+  
+    path
+  end
+
+  def simulate_move_and_check(from, to, color)
+    from_row, from_col = from
+    to_row, to_col = to
+  
+    piece = @grid[from_row][from_col]
+    captured_piece = @grid[to_row][to_col]
+  
+    @grid[to_row][to_col] = piece
+    @grid[from_row][from_col] = " "
+  
+    in_check = in_check?(color)
+  
+    @grid[from_row][from_col] = piece
+    @grid[to_row][to_col] = captured_piece
+  
+    !in_check
+  end
+
+  def checkmate?(color)
+    puts "Checking checkmate for #{color}" # debugger
+    return false unless in_check?(color)
+
+    king_pos = find_king(color)
+    puts "King position: #{king_pos}" # debugger
+    king = get_piece(king_pos)
+    king_moves = king.valid_moves(king_pos, self)
+    puts "King valid moves: #{king_moves.inspect}" # debugger
+
+    # enemy_color = color == :white ? :black : :white
+    enemy_moves = []
+    attackers = []
+
+    @grid.flatten.each do |piece|
+      next if piece.nil? || piece == ' ' || piece.color == color
+
+      from = find_piece_position(piece)
+      piece_moves = piece.valid_moves(from, self)
+      enemy_moves.concat(piece_moves)
+      attackers << piece if piece_moves.include?(king_pos)
+    end
+
+    puts "Attackers: #{attackers.map(&:name).inspect}" # debugger
+    puts "Enemy moves: #{enemy_moves.inspect}" # debugger
     
-  #     from = find_piece_position(piece)
-  #     puts "Testing moves for #{piece.class} at #{from}:"
-  #     piece.valid_moves(from, self).each do |to|
-  #       puts "Trying move to #{to}"
-  #       dup_board = self.dup
-  #       dup_board.move_piece(from, to)
-  #       puts "Still in check after move? #{dup_board.in_check?(color)}"
-  #       return false unless dup_board.in_check?(color)
-  #     end
-  #   end
-  #   puts "Checkmate detected for #{color}"
-  #   true
-  # end
+    safe_king_moves = king_moves.select do |move|
+      result = simulate_move_and_check(king_pos, move, color)
+      puts "Testing king move #{move}: safe? #{result}" # debugger
+      result
+    end
+
+    puts "Safe king moves: #{safe_king_moves.inspect}" # debugger
+    # Can the king move to safety?
+    return false unless safe_king_moves.empty?
+
+    # Is the king being double attacked?
+    # If so we cannot block and/or capture both attackers.
+    return true if attackers.length > 1
+
+    attacker = attackers[0]
+
+    attacker_pos = find_piece_position(attacker)
+    attack_path = get_path_to_king(attacker_pos, king_pos, attacker)
+    puts "Single attacker at #{attacker_pos}, path: #{attack_path.inspect}" # debugger
+
+    @grid.flatten.each do |ally|
+      next if ally.nil? || ally == " " || ally.color != king.color
+    
+      from = find_piece_position(ally)
+      ally_moves = ally.valid_moves(from, self)
+
+      puts "Checking ally #{ally.name} at #{from} with moves #{ally_moves.inspect}" # debugger
+    
+      # Can we capture the attacker?
+      return false if ally_moves.include?(attacker_pos)
+
+      # Remove king moves because king can't block his own attack
+      ally_moves -= king_moves
+    
+      # Can we block the attack?
+      attack_path.each do |block_square|
+        return false if ally_moves.include?(block_square)
+      end
+    end
+    puts "No way out — it's checkmate!" # debugger
+    true
+  end
 end
 

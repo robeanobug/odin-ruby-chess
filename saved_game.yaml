@@ -1,0 +1,170 @@
+--- !ruby/object:Game
+player1: !ruby/object:Player
+  name: White
+  color: :white
+player2: &1 !ruby/object:Player
+  name: Black
+  color: :black
+current_player: *1
+board: !ruby/object:Board
+  grid:
+  - - !ruby/object:Rook
+      color: :black
+      symbol: "♜"
+      name: rook
+    - !ruby/object:Knight
+      color: :black
+      symbol: "♞"
+      name: knight
+    - !ruby/object:Bishop
+      color: :black
+      symbol: "♝"
+      name: bishop
+    - !ruby/object:Queen
+      color: :black
+      symbol: "♛"
+      name: queen
+    - !ruby/object:King
+      color: :black
+      symbol: "♚"
+      name: king
+    - !ruby/object:Bishop
+      color: :black
+      symbol: "♝"
+      name: bishop
+    - !ruby/object:Knight
+      color: :black
+      symbol: "♞"
+      name: knight
+    - !ruby/object:Rook
+      color: :black
+      symbol: "♜"
+      name: rook
+  - - !ruby/object:Pawn
+      color: :black
+      symbol: "♟"
+      name: pawn
+    - !ruby/object:Pawn
+      color: :black
+      symbol: "♟"
+      name: pawn
+    - !ruby/object:Pawn
+      color: :black
+      symbol: "♟"
+      name: pawn
+    - !ruby/object:Pawn
+      color: :black
+      symbol: "♟"
+      name: pawn
+    - !ruby/object:Pawn
+      color: :black
+      symbol: "♟"
+      name: pawn
+    - !ruby/object:Pawn
+      color: :black
+      symbol: "♟"
+      name: pawn
+    - !ruby/object:Pawn
+      color: :black
+      symbol: "♟"
+      name: pawn
+    - !ruby/object:Pawn
+      color: :black
+      symbol: "♟"
+      name: pawn
+  - - " "
+    - " "
+    - " "
+    - " "
+    - " "
+    - " "
+    - " "
+    - " "
+  - - " "
+    - " "
+    - " "
+    - " "
+    - " "
+    - " "
+    - " "
+    - " "
+  - - " "
+    - " "
+    - " "
+    - " "
+    - " "
+    - " "
+    - " "
+    - " "
+  - - " "
+    - " "
+    - " "
+    - " "
+    - " "
+    - !ruby/object:Pawn
+      color: :white
+      symbol: "♙"
+      name: pawn
+    - " "
+    - " "
+  - - !ruby/object:Pawn
+      color: :white
+      symbol: "♙"
+      name: pawn
+    - !ruby/object:Pawn
+      color: :white
+      symbol: "♙"
+      name: pawn
+    - !ruby/object:Pawn
+      color: :white
+      symbol: "♙"
+      name: pawn
+    - !ruby/object:Pawn
+      color: :white
+      symbol: "♙"
+      name: pawn
+    - !ruby/object:Pawn
+      color: :white
+      symbol: "♙"
+      name: pawn
+    - " "
+    - !ruby/object:Pawn
+      color: :white
+      symbol: "♙"
+      name: pawn
+    - !ruby/object:Pawn
+      color: :white
+      symbol: "♙"
+      name: pawn
+  - - !ruby/object:Rook
+      color: :white
+      symbol: "♖"
+      name: rook
+    - !ruby/object:Knight
+      color: :white
+      symbol: "♘"
+      name: knight
+    - !ruby/object:Bishop
+      color: :white
+      symbol: "♗"
+      name: bishop
+    - !ruby/object:Queen
+      color: :white
+      symbol: "♕"
+      name: queen
+    - !ruby/object:King
+      color: :white
+      symbol: "♔"
+      name: king
+    - !ruby/object:Bishop
+      color: :white
+      symbol: "♗"
+      name: bishop
+    - !ruby/object:Knight
+      color: :white
+      symbol: "♘"
+      name: knight
+    - !ruby/object:Rook
+      color: :white
+      symbol: "♖"
+      name: rook

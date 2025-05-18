@@ -6,10 +6,6 @@ class Piece
     @symbol = symbol
     @name = name
   end
-
-  def dup
-    self.class.new(self)
-  end
 end
 
 

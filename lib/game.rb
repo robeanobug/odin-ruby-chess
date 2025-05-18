@@ -1,5 +1,6 @@
 require_relative 'board'
 require_relative 'player'
+require 'yaml'
 
 class Game
   def initialize
@@ -13,14 +14,41 @@ class Game
     @current_player = @current_player == @player1 ? @player2 : @player1
   end
 
+  def save_game(filename = "saved_game.yaml")
+    File.open(filename, "w") { |file| file.puts YAML.dump(self) }
+    puts "Game saved successfully!"
+  end
+
+  def self.load_game(filename = "saved_game.yaml")
+    YAML.safe_load(
+    File.read("saved_game.yaml"),
+    permitted_classes: [Game, Board, Rook, Knight, Bishop, Queen, King, Pawn, Player, Symbol],
+    aliases: true
+    )
+  end
+
   def play
     loop do
       @board.print_board
 
       # gets input from player
       puts "#{@current_player.name}'s turn, enter your move (e.g. \"e2 e4\" or \"q\" to quit): "
-      input = gets.strip
-      break if input == "q"
+      input = gets.strip.downcase
+      if input == "q"
+        puts "Save game before quitting? (y/n): "
+        save_input = gets.strip.downcase
+        case save_input
+        when "y"
+          save_game
+          break
+        when "n"
+          puts "Game not saved. Goodbye!"
+          break
+        else
+          puts "Invalid choice. Game will not be saved."
+          break
+        end
+      end
 
       # converts input to array format, e.g. d7 d6 => [[6, 3], [5, 3]]
       move = @board.parse_move(input)
@@ -52,20 +80,15 @@ class Game
       end
 
       enemy = @current_player == @player1 ? @player2 : @player1
-
+      
       if @board.in_check?(enemy.color)
         if @board.checkmate?(enemy.color)
           @board.print_board
-          puts "Checkmate! Congrats #{@current_player.name}, you win!"
+          puts "Checkmate! Congrats #{@current_player.name}, you are the winner!"
           break
         else
           puts "#{enemy.color.capitalize} is in check!"
         end
-      end
-
-      if @board.checkmate?(@current_player.color)
-        puts "Congrats #{@current_player.name}! You are the winner!"
-        break
       end
 
       switch_turn
@@ -74,5 +97,9 @@ class Game
   end
 end
 
-game = Game.new
+puts "Welcome to Chess!"
+puts "Type 'l' to load saved game or anything else to start a new one:"
+choice = gets.strip.downcase
+
+game = choice == "l" && File.exist?("saved_game.yaml") ? Game.load_game : Game.new
 game.play
